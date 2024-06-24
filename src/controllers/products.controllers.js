@@ -35,7 +35,7 @@ export const createProduct = async (req, res) => {
     const productCost = req.body.productCost;
     const onOffer = req.body.onOffer;
          const insert = await pool.query (
-        "INSERT INTO products (productThumbnail,productTitle,productDescription,productCost) VALUES ($1,$2,$3,$4)",
+        "INSERT INTO products (productThumbnail,productTitle,productDescription,productCost,onOffer) VALUES ($1,$2,$3,$4)",
     [productThumbnail,productTitle,productDescription,productCost,onOffer],
         );
         if (insert.rowCount === 1){res.status(201).json({ success: true, message: "Product created successfully" });
@@ -47,7 +47,7 @@ export const createProduct = async (req, res) => {
 
 
      export const updateProduct = async (req, res) => {
-        const {productThumbnail,productTitle,productDescription,productCost} = req.body;
+        const {productThumbnail,productTitle,productDescription,productCost,onOffer} = req.body;
         const id = req.params.id;
         try {
           let updateOperation;
@@ -75,6 +75,12 @@ export const createProduct = async (req, res) => {
             [productCost, id],
           );
         }
+        if (onOffer) {
+            updateOperation = await pool.query(
+              "UPDATE products SET onOffer = $1 WHERE id=$2",
+              [onOffer, id],
+            );
+          }
         if (updateOperation.rowCount === 1) {
             res
               .status(200)
